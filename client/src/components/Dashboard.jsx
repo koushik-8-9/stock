@@ -24,7 +24,7 @@ export default function Dashboard({ email, supportedTickers, onLogout }) {
 
   // Initialize socket & handlers
   useEffect(() => {
-    const s = io("http://localhost:4000", { transports: ["websocket"] });
+    const s = io("https://stock-g0zg.onrender.com", { transports: ["websocket"] });
     socketRef.current = s;
     setSocket(s);
 
