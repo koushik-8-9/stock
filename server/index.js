@@ -1,0 +1,173 @@
+// server/index.js
+const express = require("express");
+const http = require("http");
+const cors = require("cors");
+const { Server } = require("socket.io");
+
+const app = express();
+const PORT = 4000;
+
+app.use(cors({
+  origin: "http://localhost:5173",
+  methods: ["GET", "POST"],
+  credentials: true
+}));
+app.use(express.json());
+
+// --- Supported tickers ---
+const SUPPORTED_TICKERS = ["GOOG", "TSLA", "AMZN", "META", "NVDA"];
+
+// --- In-memory price store ---
+const stockPrices = {};
+
+// --- In-memory client and user stores ---
+// clients: socketId -> { email, subscriptions: Set }
+const clients = {};
+
+// userSubscriptions: email -> Set of tickers (persisted across socket reconnects)
+const userSubscriptions = {}; // KEY CHANGE: persistent mapping by email
+
+// --- Helpers ---
+function getRandomInitialPrice() {
+  const price = 100 + Math.random() * 900;
+  return parseFloat(price.toFixed(2));
+}
+function mutatePrice(currentPrice) {
+  const delta = (Math.random() - 0.5) * 10;
+  const newPrice = Math.max(10, currentPrice + delta);
+  return parseFloat(newPrice.toFixed(2));
+}
+
+// Initialize prices
+SUPPORTED_TICKERS.forEach(t => {
+  stockPrices[t] = getRandomInitialPrice();
+});
+
+// --- Mock login endpoint ---
+app.post("/api/login", (req, res) => {
+  const { email } = req.body;
+  if (!email || typeof email !== "string") {
+    return res.status(400).json({ success: false, message: "Email is required" });
+  }
+  // Ensure userSubscriptions entry exists so it persists even when no socket connected
+  if (!userSubscriptions[email]) {
+    userSubscriptions[email] = new Set();
+  }
+  console.log(`Login request for email: ${email}`);
+  res.json({ success: true, email });
+});
+
+// --- Start server + socket.io ---
+const server = http.createServer(app);
+const io = new Server(server, {
+  cors: {
+    origin: "http://localhost:5173",
+    methods: ["GET", "POST"]
+  }
+});
+
+io.on("connection", (socket) => {
+  console.log(`Client connected: ${socket.id}`);
+
+  socket.on("registerUser", (email) => {
+    console.log(`Socket ${socket.id} registering email: ${email}`);
+
+    // Ensure the global userSubscriptions entry exists
+    if (!userSubscriptions[email]) {
+      userSubscriptions[email] = new Set();
+    }
+
+    // Attach this socket to clients map
+    const subscriptionsFromUser = new Set([...userSubscriptions[email]]); // copy
+    clients[socket.id] = {
+      email,
+      subscriptions: subscriptionsFromUser
+    };
+
+    // Send initial data to client: its subscriptions + current prices for those tickers
+    const subscribedTickersArray = Array.from(subscriptionsFromUser);
+    const initialPrices = {};
+    subscribedTickersArray.forEach(t => {
+      if (stockPrices[t] !== undefined) initialPrices[t] = stockPrices[t];
+    });
+
+    socket.emit("init", {
+      subscriptions: subscribedTickersArray,
+      prices: initialPrices
+    });
+
+    console.log(`Initialized socket ${socket.id} with subscriptions:`, subscribedTickersArray);
+  });
+
+  socket.on("subscribe", ({ ticker }) => {
+    const client = clients[socket.id];
+    if (!client) return;
+
+    if (!SUPPORTED_TICKERS.includes(ticker)) return;
+
+    // Update socket's subscriptions
+    client.subscriptions.add(ticker);
+
+    // Update global userSubscriptions (persist)
+    const email = client.email;
+    if (!userSubscriptions[email]) userSubscriptions[email] = new Set();
+    userSubscriptions[email].add(ticker);
+
+    console.log(`User ${email} subscribed to ${ticker}`);
+    // Optionally send the immediate price for this ticker to the client
+    socket.emit("priceUpdate", { prices: { [ticker]: stockPrices[ticker] } });
+  });
+
+  socket.on("unsubscribe", ({ ticker }) => {
+    const client = clients[socket.id];
+    if (!client) return;
+
+    if (!client.subscriptions.has(ticker)) return;
+
+    // Remove from socket subscriptions
+    client.subscriptions.delete(ticker);
+
+    // Remove from global userSubscriptions (persist)
+    const email = client.email;
+    if (userSubscriptions[email]) {
+      userSubscriptions[email].delete(ticker);
+    }
+
+    console.log(`User ${client.email} unsubscribed from ${ticker}`);
+  });
+
+  socket.on("disconnect", () => {
+    const client = clients[socket.id];
+    if (client) {
+      console.log(`Client disconnected: ${socket.id}, email: ${client.email}`);
+      // Do NOT delete userSubscriptions — we want to persist the user's subscriptions by email
+      delete clients[socket.id];
+    } else {
+      console.log(`Client disconnected: ${socket.id}`);
+    }
+  });
+});
+
+// --- Price update broadcast (every second) ---
+setInterval(() => {
+  // mutate prices
+  SUPPORTED_TICKERS.forEach((ticker) => {
+    stockPrices[ticker] = mutatePrice(stockPrices[ticker]);
+  });
+
+  // For each connected client, send only the tickers they're subscribed to
+  Object.entries(clients).forEach(([socketId, client]) => {
+    const pricesForClient = {};
+    client.subscriptions.forEach((ticker) => {
+      pricesForClient[ticker] = stockPrices[ticker];
+    });
+
+    if (Object.keys(pricesForClient).length > 0) {
+      io.to(socketId).emit("priceUpdate", { prices: pricesForClient });
+    }
+  });
+}, 1000);
+
+server.listen(PORT, () => {
+  console.log(`Server listening on http://localhost:${PORT}`);
+});

@@ -1,0 +1,567 @@
+/* client/src/styles.css
+   Light Minimal Professional Dashboard
+*/
+
+:root {
+  --bg: #f6f8fb;
+  --panel: #ffffff;
+  --muted: #6b7280;
+  --text: #0f172a;
+  --accent: #2563eb;    /* blue */
+  --accent-2: #06b6d4;  /* teal */
+  --success: #16a34a;
+  --danger: #dc2626;
+  --glass-border: rgba(15,23,42,0.06);
+  --shadow-sm: 0 6px 18px rgba(17,24,39,0.06);
+  --shadow-md: 0 12px 36px rgba(17,24,39,0.08);
+  --radius: 10px;
+  --max-width: 1150px;
+  --gap: 20px;
+  --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, "Roboto Mono", "Courier New", monospace;
+}
+
+* { box-sizing: border-box; }
+html, body, #root { height: 100%; }
+body {
+  margin: 0;
+  font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+  background: var(--bg);
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  line-height: 1.45;
+}
+
+/* Root container */
+.app-container {
+  max-width: var(--max-width);
+  margin: 32px auto;
+  padding: 20px;
+}
+
+/* Top title + optional logo */
+.app-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.brand {
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+
+.brand .logo {
+  width:46px;
+  height:46px;
+  border-radius:10px;
+  background: linear-gradient(135deg, var(--accent), var(--accent-2));
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  color: white;
+  font-weight:700;
+  box-shadow: var(--shadow-sm);
+  font-family: var(--mono);
+}
+
+.brand h1 {
+  margin: 0;
+  font-size: 1.15rem;
+  font-weight:700;
+  letter-spacing: -0.2px;
+}
+
+.brand p {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+/* header actions / user pill */
+.header-actions {
+  display:flex;
+  gap:12px;
+  align-items:center;
+}
+
+/* user pill */
+.user-pill {
+  display:inline-flex;
+  align-items:center;
+  gap:10px;
+  padding:8px 12px;
+  border-radius:999px;
+  background: #ffffff;
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--shadow-sm);
+  font-weight:600;
+  color: var(--text);
+}
+
+/* Card style */
+.card {
+  background: var(--panel);
+  border-radius: var(--radius);
+  padding: 18px;
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--shadow-sm);
+}
+
+/* page sections */
+.dashboard {
+  display:flex;
+  flex-direction:column;
+  gap: var(--gap);
+}
+
+/* header row inside dashboard */
+.dashboard-header {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:12px;
+}
+
+/* grid layout for main content */
+.dashboard-grid {
+  display:grid;
+  grid-template-columns: 1.45fr 1fr;
+  gap: var(--gap);
+}
+@media (max-width: 980px) {
+  .dashboard-grid { grid-template-columns: 1fr; }
+}
+
+/* form */
+.form { display:flex; flex-direction:column; gap:12px; margin-top:8px; }
+.form-label { display:flex; flex-direction:column; gap:6px; font-size:0.9rem; color:var(--muted); }
+.input {
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--glass-border);
+  background: #ffffff;
+  color: var(--text);
+  outline: none;
+  font-size: 0.95rem;
+}
+.input:focus {
+  border-color: rgba(37,99,235,0.35);
+  box-shadow: 0 8px 20px rgba(37,99,235,0.06);
+}
+
+/* Buttons */
+.btn {
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.95rem;
+  transition: transform .12s ease, box-shadow .12s ease, opacity .12s ease;
+  color: white;
+  background: linear-gradient(90deg, var(--accent), var(--accent-2));
+  box-shadow: 0 8px 24px rgba(37,99,235,0.12);
+}
+.btn:hover { transform: translateY(-2px); }
+.btn:active { transform: translateY(0); }
+.btn:disabled { opacity: .6; cursor: not-allowed; transform:none; box-shadow:none; }
+
+.btn.ghost {
+  background: transparent;
+  color: var(--accent);
+  box-shadow: none;
+  border: 1px solid var(--glass-border);
+}
+.btn.secondary {
+  background: #f3f4f6;
+  color: var(--text);
+  box-shadow: none;
+  border: 1px solid var(--glass-border);
+}
+
+/* small button */
+.btn.small { padding: 6px 10px; font-size: 0.85rem; border-radius: 8px; }
+
+/* table */
+.table {
+  width:100%;
+  border-collapse: collapse;
+  margin-top: 12px;
+  font-size: 0.95rem;
+  color: var(--text);
+}
+.table th, .table td {
+  padding: 12px 14px;
+  border-bottom: 1px solid #f1f5f9;
+  text-align: left;
+  vertical-align: middle;
+}
+.table th {
+  color: var(--muted);
+  font-weight: 700;
+  font-size: 0.85rem;
+}
+
+/* ticker cell and badge */
+.ticker-cell { display:flex; align-items:center; gap:12px; }
+.ticker-symbol { font-weight:700; font-size:1rem; }
+.ticker-desc { font-size:0.85rem; color:var(--muted); }
+
+/* tag / status */
+.tag { padding: 6px 10px; border-radius: 999px; font-size: 0.8rem; font-weight: 700; }
+.tag-subscribed { background: rgba(37,99,235,0.08); color: var(--accent); border: 1px solid rgba(37,99,235,0.06); }
+.tag-not-subscribed { background: rgba(107,114,128,0.06); color: var(--muted); }
+
+/* price */
+.price-cell { font-variant-numeric: tabular-nums; font-weight:700; font-size: 1rem; }
+.price-value {
+  display:inline-block;
+  padding:6px 10px;
+  border-radius:8px;
+  background: #fff;
+  box-shadow: 0 6px 20px rgba(15,23,42,0.04);
+  transition: transform .15s ease, box-shadow .15s ease, color .15s ease;
+}
+.price-flash { animation: flashPrice .7s ease; }
+@keyframes flashPrice {
+  0% { transform: translateY(-6px); box-shadow: 0 18px 36px rgba(15,23,42,0.06); }
+  60% { transform: translateY(0); box-shadow: 0 8px 20px rgba(15,23,42,0.04); }
+  100% { transform: translateY(0); }
+}
+.price-up { color: var(--success); }
+.price-down { color: var(--danger); }
+
+/* login card center */
+.card.center { max-width: 520px; margin: 0 auto; }
+
+/* helper text */
+.muted { color: var(--muted); font-size: 0.92rem; }
+.small { font-size: 0.85rem; color: var(--muted); }
+
+/* divider */
+.divider { height:1px; background: #f1f5f9; opacity:0.06; margin:12px 0; }
+
+/* responsive */
+@media (max-width: 600px) {
+  .app-container { padding: 16px; }
+  .app-title h1 { font-size: 1rem; }
+  .table th, .table td { padding: 10px 8px; font-size: 0.9rem; }
+}
+
+/* accessibility focus */
+:focus { outline: 3px solid rgba(37,99,235,0.12); outline-offset: 2px; }
+
+/* Login page specific layout to match provided screenshot */
+.login-wrap {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 28px 0 120px 0; /* keep some top spacing */
+}
+
+/* Outer card provides a subtle elevated background frame (the bigger rounded card) */
+.login-outer {
+  width: 680px;          /* desktop width like screenshot */
+  border-radius: 14px;
+  padding: 18px;
+  background: linear-gradient(180deg, #ffffff, #fbfcfd);
+  box-shadow: 0 18px 50px rgba(15,23,42,0.08);
+  border: 1px solid rgba(15,23,42,0.03);
+}
+
+/* Inner card with a slight inset feel (white inner panel) */
+.login-inner {
+  background: #ffffff;
+  padding: 28px 30px;
+  border-radius: 10px;
+  box-shadow: 0 6px 18px rgba(15,23,42,0.04);
+  border: 1px solid rgba(15,23,42,0.02);
+}
+
+/* make the main title bigger and bold on the login card */
+.login-head h2 {
+  font-size: 1.4rem;
+  color: var(--text);
+  font-weight: 700;
+}
+
+/* Set input to full width and consistent height */
+.login-inner .input {
+  width: 100%;
+  height: 44px;
+  padding: 10px 12px;
+  font-size: 0.95rem;
+}
+
+/* Make primary button wider and use gradient */
+.login-inner .btn {
+  padding: 12px 16px;
+  border-radius: 10px;
+  font-weight: 700;
+  letter-spacing: 0.2px;
+  font-size: 1rem;
+  box-shadow: 0 10px 30px rgba(37,99,235,0.12);
+}
+
+/* Ghost button next to primary */
+.login-inner .btn.ghost {
+  background: transparent;
+  color: var(--text);
+  border: 1px solid rgba(15,23,42,0.06);
+  box-shadow: none;
+}
+
+/* center the login card on small screens */
+@media (max-width: 780px) {
+  .login-outer { width: 92%; padding: 12px; }
+  .login-inner { padding: 18px; }
+}
+
+/* Center the brand header on login page */
+.center-header {
+  justify-content: center !important;
+  text-align: center;
+}
+
+/* Center brand horizontally */
+.center-header .brand {
+  justify-content: center;
+  flex: 1;
+}
+
+/* Hide user-pill area on login page */
+.center-header .header-actions {
+  display: none !important;
+}
+
+.primary-btn {
+  background: linear-gradient(90deg, var(--accent), var(--accent-2));
+  color: white !important;
+  border: none !important;
+}
+
+
+.danger-btn {
+  background: #ef4444 !important;
+  color: white !important;
+  border: none !important;
+  box-shadow: 0 6px 18px rgba(239, 68, 68, 0.25);
+}
+
+
+/* ===== Mobile stacked polish for split-login (append) ===== */
+
+/* Make stacked layout intentional and polished for narrow screens */
+@media (max-width: 980px) {
+  /* ensure container has breathing room */
+  .login-split {
+    flex-direction: column;
+    gap: 14px;
+    padding: 18px 12px 48px;
+    align-items: center;
+  }
+
+  /* art card becomes a full-width rounded panel with soft shadow */
+  .art-inner {
+    width: 100%;
+    max-width: 720px;
+    border-radius: 14px;
+    padding: 18px;
+    box-shadow: 0 18px 60px rgba(9,30,66,0.04);
+    margin: 0 auto;
+    background: linear-gradient(180deg, rgba(255,255,255,0.98), rgba(250,251,255,0.99));
+    border: 1px solid rgba(15,23,42,0.02);
+  }
+  .art-blob { height: 220px; border-radius: 10px; }
+
+  /* art caption spacing adjustments */
+  .art-caption { margin-top: 12px; padding: 4px 6px 14px; }
+
+  /* panel (login card) becomes full width and visually connected */
+  .panel-inner {
+    width: 100%;
+    max-width: 720px;
+    margin: 0 auto;
+    border-radius: 14px;
+    padding: 18px;
+    box-shadow: 0 20px 70px rgba(9,30,66,0.06);
+    border: 1px solid rgba(15,23,42,0.03);
+    transform: translateY(-8px); /* subtle overlap to merge */
+  }
+
+  /* reduce heavy overlap artifacts on small screens */
+  .art-inner::after { display: none; }
+
+  /* center the heading and description for stronger mobile hierarchy */
+  .panel-inner h2 { text-align: center; font-size: 1.4rem; margin-top: 8px; margin-bottom: 6px; letter-spacing: -0.3px; }
+  .panel-inner .muted { text-align: center; margin-bottom: 12px; }
+
+  /* input full width and comfortable height */
+  .panel-inner .input { height: 46px; padding: 12px 14px; font-size: 0.95rem; }
+
+  /* CTA: stacked but nicely sized */
+  .panel-inner .actions-row {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    justify-content: center;
+  }
+  .panel-inner .actions-row .btn.primary {
+    flex: 1 1 60%;
+    min-width: 160px;
+    padding: 12px 14px;
+    border-radius: 10px;
+    font-size: 1rem;
+  }
+  .panel-inner .actions-row .btn.ghost {
+    flex: 0 0 auto;
+    min-width: 84px;
+    padding: 10px 12px;
+  }
+
+  /* small caption alignment under card */
+  .panel-inner + .small, .panel-inner .small { text-align: center; margin-top: 12px; color: var(--muted); }
+
+  /* tighten header spacing on mobile */
+  .app-title.center-header { transform: translateY(6px); margin-bottom: 2px; }
+
+  /* slightly reduce art brightness so panel stands out */
+  .art-inner { background: linear-gradient(180deg, rgba(255,255,255,0.98), rgba(250,251,255,0.98)); }
+}
+
+/* Small tweaks for extra small devices */
+@media (max-width: 420px) {
+  .panel-inner .btn.primary { font-size: 0.98rem; padding: 10px 12px; }
+  .panel-inner h2 { font-size: 1.25rem; }
+  .art-blob { height: 180px; }
+}
+
+/* hero image styling (ensure exists in styles.css) */
+.art-inner {
+  position: relative;
+  overflow: hidden;
+  border-radius: 18px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.00));
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* image fills container while preserving aspect */
+.art-inner .hero-img {
+  display: block;
+  width: 100%;
+  height: 360px;               /* desktop height */
+  object-fit: cover;
+  border-radius: 12px;
+  box-shadow: inset 0 12px 40px rgba(255,255,255,0.02), 0 20px 60px rgba(9,30,66,0.04);
+  transform-origin: center;
+  transition: transform 300ms ease, filter 300ms ease;
+  filter: brightness(0.95) contrast(1.05);
+}
+
+/* hover effect for pointer-capable devices */
+@media (hover: hover) and (min-width: 980px) {
+  .art-inner .hero-img:hover {
+    transform: scale(1.02);
+    filter: brightness(1.02) contrast(1.06);
+  }
+}
+
+/* smaller screens: reduce height and use containment */
+@media (max-width: 980px) {
+  .art-inner .hero-img {
+    height: 220px;
+  }
+}
+
+/* decorative soft reflection to visually merge with panel */
+.art-inner::before {
+  content: "";
+  position: absolute;
+  right: -10%;
+  top: -8%;
+  width: 60%;
+  height: 120%;
+  background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.00));
+  transform: rotate(-12deg);
+  pointer-events: none;
+  border-radius: 28%;
+  mix-blend-mode: screen;
+  opacity: 0.9;
+}
+
+
+/* --- Unified Login Card Layout --- */
+
+.login-wrapper {
+  display: flex;
+  justify-content: center;
+  padding-top: 30px;
+}
+
+.login-card {
+  width: 100%;
+  max-width: 1000px;
+  background: white;
+  border-radius: 14px;
+  border: 1px solid rgba(15,23,42,0.06);
+  box-shadow: 0 20px 50px rgba(15,23,42,0.08);
+  padding: 24px;
+  display: grid;
+  grid-template-columns: 1.2fr 0.9fr;
+  gap: 28px;
+  align-items: start;
+}
+
+/* LEFT AREA */
+.login-left {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.login-hero-img {
+  width: 100%;
+  border-radius: 12px;
+  object-fit: cover;
+  height: 280px;
+  box-shadow: 0 12px 32px rgba(0,0,0,0.15);
+}
+
+.login-left-title {
+  margin: 0;
+  font-size: 1.15rem;
+  font-weight: 700;
+}
+
+/* RIGHT AREA */
+.login-right {
+  padding: 12px 8px;
+}
+
+.login-right h2 {
+  margin-top: 6px;
+  margin-bottom: 6px;
+  font-size: 1.45rem;
+}
+
+/* RESPONSIVE */
+@media (max-width: 860px) {
+  .login-card {
+    grid-template-columns: 1fr;
+  }
+
+  .login-hero-img {
+    height: 220px;
+  }
+}
