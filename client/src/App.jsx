@@ -1,11 +1,12 @@
+// App.jsx
 import React, { useState } from "react";
 import LoginPage from "./components/LoginPage.jsx";
 import Dashboard from "./components/Dashboard.jsx";
 
 /**
  * App.jsx
- * Root application. Shows a branded header and either the LoginPage or Dashboard.
- * - Keeps currentUserEmail in state (simple mock login).
+ * - Acts ONLY as a switch between Login and Dashboard.
+ * - Removed all HTML wrappers (divs/headers) to prevent layout conflicts.
  */
 
 const SUPPORTED_TICKERS = ["GOOG", "TSLA", "AMZN", "META", "NVDA"];
@@ -13,44 +14,22 @@ const SUPPORTED_TICKERS = ["GOOG", "TSLA", "AMZN", "META", "NVDA"];
 export default function App() {
   const [currentUserEmail, setCurrentUserEmail] = useState(null);
 
+  // 1. If NOT logged in, show the Login Page directly.
+  // We removed the <div className="card center"> wrapper so the login page
+  // can expand to fill the screen as designed.
+  if (!currentUserEmail) {
+    return (
+      <LoginPage onLoginSuccess={(email) => setCurrentUserEmail(email)} />
+    );
+  }
+
+  // 2. If logged in, show the Dashboard directly.
+  // We removed the header/pill here because Dashboard.jsx now has its own header.
   return (
-    <div className="app-container">
-      {/* Top header / brand */}
-      <div
-        className={`app-title ${!currentUserEmail ? "center-header" : ""}`}
-        role="banner"
-      >
-        <div className="brand">
-          <div className="logo" aria-hidden>
-            SB
-          </div>
-          <div>
-            <h1>Stock Broker Dashboard</h1>
-            <p className="small muted">Real-time demo — simulated prices</p>
-          </div>
-        </div>
-
-        <div className="header-actions">
-          {/* Show user pill ONLY when logged in */}
-          {currentUserEmail && (
-            <div className="user-pill">{currentUserEmail}</div>
-          )}
-        </div>
-      </div>
-
-      {/* Main content */}
-      {!currentUserEmail ? (
-        <div className="card center">
-          <LoginPage onLoginSuccess={(email) => setCurrentUserEmail(email)} />
-        </div>
-      ) : (
-        <Dashboard
-          email={currentUserEmail}
-          supportedTickers={SUPPORTED_TICKERS}
-          onLogout={() => setCurrentUserEmail(null)}
-        />
-      )}
-    </div>
+    <Dashboard
+      email={currentUserEmail}
+      supportedTickers={SUPPORTED_TICKERS}
+      onLogout={() => setCurrentUserEmail(null)}
+    />
   );
 }
-
