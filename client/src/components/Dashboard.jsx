@@ -29,6 +29,17 @@ export default function Dashboard({ email, supportedTickers, onLogout }) {
       if (!updatedPrices) return;
       setPrices((prev) => ({ ...prev, ...updatedPrices }));
     });
+// new added
+    s.on("subscribed", ({ ticker }) => {
+  setSubscriptions(prev =>
+    prev.includes(ticker) ? prev : [...prev, ticker]
+  );
+});
+
+s.on("unsubscribed", ({ ticker }) => {
+  setSubscriptions(prev => prev.filter(t => t !== ticker));
+});
+
 
     return () => {
       try { s.disconnect(); } catch (e) {}
