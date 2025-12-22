@@ -255,25 +255,47 @@ io.on("connection", (socket) => {
     });
   });
 
+  // socket.on("subscribe", ({ ticker }) => {
+  //   const client = clients[socket.id];
+  //   if (!client || !SUPPORTED_TICKERS.includes(ticker)) return;
+
+  //   client.subscriptions.add(ticker);
+  //   userSubscriptions[client.email].add(ticker);
+
+  //   socket.emit("priceUpdate", {
+  //     prices: { [ticker]: stockPrices[ticker] }
+  //   });
+  // });
+
+  // socket.on("unsubscribe", ({ ticker }) => {
+  //   const client = clients[socket.id];
+  //   if (!client) return;
+
+  //   client.subscriptions.delete(ticker);
+  //   userSubscriptions[client.email]?.delete(ticker);
+  // });
+
   socket.on("subscribe", ({ ticker }) => {
-    const client = clients[socket.id];
-    if (!client || !SUPPORTED_TICKERS.includes(ticker)) return;
+  const client = clients[socket.id];
+  if (!client || !SUPPORTED_TICKERS.includes(ticker)) return;
 
-    client.subscriptions.add(ticker);
-    userSubscriptions[client.email].add(ticker);
+  client.subscriptions.add(ticker);
+  userSubscriptions[client.email].add(ticker);
 
-    socket.emit("priceUpdate", {
-      prices: { [ticker]: stockPrices[ticker] }
-    });
-  });
+  socket.emit("subscribed", { ticker });
+  socket.emit("priceUpdate", { prices: { [ticker]: stockPrices[ticker] } });
+});
 
-  socket.on("unsubscribe", ({ ticker }) => {
-    const client = clients[socket.id];
-    if (!client) return;
+socket.on("unsubscribe", ({ ticker }) => {
+  const client = clients[socket.id];
+  if (!client) return;
 
-    client.subscriptions.delete(ticker);
-    userSubscriptions[client.email]?.delete(ticker);
-  });
+  client.subscriptions.delete(ticker);
+  userSubscriptions[client.email]?.delete(ticker);
+
+  socket.emit("unsubscribed", { ticker });
+});
+
 
   socket.on("disconnect", () => {
     delete clients[socket.id];
