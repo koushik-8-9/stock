@@ -95,7 +95,7 @@ Link : https://stock-zeta-sooty.vercel.app
 
 ## 📌 Notes
 - Deployed in Vercel(frontend) and Render(backend)
-- Prices are simulated and user is requested to wait 30 sec(after logging in) before subscribing for stocks because of vendors we used and those are free versions so takes time to load prices.
+- Prices are simulated and user is requested to wait 2 - 3secs (after logging in) before subscribing for stocks because of vendors we used and those are free versions so takes time to load prices.
 - Data stored in memory only.
 - Designed for demo.
 
