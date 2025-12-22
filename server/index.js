@@ -184,8 +184,8 @@ const PORT = process.env.PORT || 4000; // ✅ FIX 1
 /* ---------------- CORS ---------------- */
 const allowedOrigins = [
   "http://localhost:5173",
-  "https://stock-g0zg.onrender.com" // frontend domain if same
-  // add Vercel/Netlify frontend URL here if different
+  "https://stock-frontend-f14v.onrender.com" 
+  "https://stock-zeta-sooty.vercel.app"
 ];
 
 app.use(cors({
