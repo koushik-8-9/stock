@@ -184,7 +184,7 @@ const PORT = process.env.PORT || 4000; // ✅ FIX 1
 /* ---------------- CORS ---------------- */
 const allowedOrigins = [
   "http://localhost:5173",
-  "https://stock-frontend-f14v.onrender.com" 
+  "https://stock-frontend-f14v.onrender.com", 
   "https://stock-zeta-sooty.vercel.app"
 ];
 
