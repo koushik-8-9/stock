@@ -12,7 +12,11 @@ export default function Dashboard({ email, supportedTickers, onLogout }) {
   const [prices, setPrices] = useState({});
 
   useEffect(() => {
-    const s = io("https://stock-g0zg.onrender.com", { transports: ["websocket"] });
+      if (!email) return;
+      if (socketRef.current) return;
+    // const s = io("https://stock-g0zg.onrender.com", { transports: ["websocket"] });
+    const s = io("https://stock-g0zg.onrender.com", {transports: ["websocket"],withCredentials: true});
+
     socketRef.current = s;
     setSocket(s);
 
@@ -41,13 +45,19 @@ export default function Dashboard({ email, supportedTickers, onLogout }) {
   const handleToggleSubscription = (ticker) => {
     const s = socketRef.current;
     if (!s) return;
+    // if (isSubscribed(ticker)) {
+    //   s.emit("unsubscribe", { ticker });
+    //   setSubscriptions((prev) => prev.filter((t) => t !== ticker));
+    // } else {
+    //   s.emit("subscribe", { ticker });
+    //   setSubscriptions((prev) => [...prev, ticker]);
+    // }
     if (isSubscribed(ticker)) {
-      s.emit("unsubscribe", { ticker });
-      setSubscriptions((prev) => prev.filter((t) => t !== ticker));
-    } else {
-      s.emit("subscribe", { ticker });
-      setSubscriptions((prev) => [...prev, ticker]);
-    }
+  s.emit("unsubscribe", { ticker });
+} else {
+  s.emit("subscribe", { ticker });
+}
+
   };
 
   
