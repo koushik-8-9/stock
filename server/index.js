@@ -177,16 +177,16 @@ const express = require("express");
 const http = require("http");
 const cors = require("cors");
 const { Server } = require("socket.io");
+require("dotenv").config();
+
 
 const app = express();
 const PORT = process.env.PORT || 4000; // ✅ FIX 1
 
 /* ---------------- CORS ---------------- */
 const allowedOrigins = [
-  "http://localhost:5173",
-  "https://stock-frontend-f14v.onrender.com", 
-  "https://stock-zeta-sooty.vercel.app"
-];
+  process.env.FRONTEND_URL
+].filter(Boolean);
 
 app.use(cors({
   origin: allowedOrigins,
