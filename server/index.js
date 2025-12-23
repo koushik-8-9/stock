@@ -178,7 +178,7 @@ const http = require("http");
 const cors = require("cors");
 const { Server } = require("socket.io");
 
-
+const Brevo = require("@getbrevo/brevo");
 
 const app = express();
 const PORT = process.env.PORT || 4000; // ✅ FIX 1
@@ -200,6 +200,7 @@ const SUPPORTED_TICKERS = ["GOOG", "TSLA", "AMZN", "META", "NVDA"];
 const stockPrices = {};
 const clients = {};              // socketId -> { email, subscriptions }
 const userSubscriptions = {};    // email -> Set
+const otpStore = {}; // email -> { otp, expiresAt }
 
 /* ---------------- HELPERS ---------------- */
 function getRandomInitialPrice() {
@@ -221,6 +222,87 @@ app.post("/api/login", (req, res) => {
   if (!userSubscriptions[email]) userSubscriptions[email] = new Set();
   res.json({ success: true, email });
 });
+
+app.post("/api/send-otp", async (req, res) => {
+  try {
+    const { email } = req.body;
+    if (!email) {
+      return res.status(400).json({ success: false, message: "Email required" });
+    }
+
+    // Generate 6-digit OTP
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+
+    // Store OTP (in-memory for now)
+    otpStore[email] = {
+      otp,
+      expiresAt: Date.now() + 5 * 60 * 1000 // 5 minutes
+    };
+
+    // Initialize Brevo API
+    const apiInstance = new Brevo.TransactionalEmailsApi();
+    apiInstance.setApiKey(
+      Brevo.TransactionalEmailsApiApiKeys.apiKey,
+      process.env.BREVO_API_KEY
+    );
+
+    // Send OTP email
+    await apiInstance.sendTransacEmail({
+      sender: {
+        name: "Good Stocks",
+        email: process.env.SENDER_EMAIL
+      },
+      to: [{ email }],
+      subject: "Your OTP for Good Stocks Login",
+      htmlContent: `
+        <p>Hello,</p>
+
+        <p>We received a request to sign in to your Good Stocks account.</p>
+
+        <p>Your One-Time Password (OTP) is:</p>
+
+        <h2><strong>${otp}</strong></h2>
+
+        <p>
+          This OTP is valid for the next <strong>5 minutes</strong>.<br/>
+          Please do not share this code with anyone for security reasons.
+        </p>
+
+        <p>
+          If you did not request this login, please ignore this email.
+        </p>
+
+        <p>
+          Best regards,<br/>
+          <strong>Good Stocks Team</strong>
+        </p>
+      `
+    });
+
+    res.json({ success: true });
+  } catch (err) {
+    console.error("BREVO ERROR:", err.message);
+    res.status(500).json({ success: false, message: "Failed to send OTP" });
+  }
+});
+
+
+app.post("/api/verify-otp", (req, res) => {
+  const { email, otp } = req.body;
+  const record = otpStore[email];
+
+  if (!record) return res.status(400).json({ success: false });
+
+  if (Date.now() > record.expiresAt)
+    return res.status(400).json({ success: false, message: "OTP expired" });
+
+  if (record.otp !== otp)
+    return res.status(400).json({ success: false, message: "Invalid OTP" });
+
+  delete otpStore[email];
+  res.json({ success: true });
+});
+
 
 /* ---------------- SOCKET ---------------- */
 const server = http.createServer(app);
