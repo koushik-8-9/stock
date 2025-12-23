@@ -5,6 +5,8 @@ import './LoginPage.css'; // Importing the standard CSS file
 
 const LoginPage = ({ onLoginSuccess }) => {
   const [email, setEmail] = useState('');
+  const [otp, setOtp] = useState("");
+  const [otpSent, setOtpSent] = useState(false);
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
@@ -16,32 +18,62 @@ const LoginPage = ({ onLoginSuccess }) => {
       );
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    setError('');
+  // const handleSubmit = (e) => {
+  //   e.preventDefault();
+  //   setError('');
 
-    if (!email) {
-      setError('Email is required to access the dashboard.');
-      return;
-    }
+  //   if (!email) {
+  //     setError('Email is required to access the dashboard.');
+  //     return;
+  //   }
 
-    if (!validateEmail(email)) {
-      setError('Please enter a valid email address.');
-      return;
-    }
+  //   if (!validateEmail(email)) {
+  //     setError('Please enter a valid email address.');
+  //     return;
+  //   }
 
+  //   setIsLoading(true);
+
+  //   // Simulate API delay for dramatic effect
+  //   setTimeout(() => {
+  //     setIsLoading(false);
+  //     if (onLoginSuccess) {
+  //       onLoginSuccess(email);
+  //     } else {
+  //       alert(`Logged in as: ${email}`);
+  //     }
+  //   }, 1500);
+  // };
+
+    const handleSubmit = async (e) => {
+  e.preventDefault();
+  setError("");
+
+  if (!email) return setError("Email required");
+
+  if (!otpSent) {
     setIsLoading(true);
+    const res = await fetch("https://stock-g0zg.onrender.com/api/send-otp", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email })
+    });
+    setIsLoading(false);
 
-    // Simulate API delay for dramatic effect
-    setTimeout(() => {
-      setIsLoading(false);
-      if (onLoginSuccess) {
-        onLoginSuccess(email);
-      } else {
-        alert(`Logged in as: ${email}`);
-      }
-    }, 1500);
-  };
+    if (res.ok) setOtpSent(true);
+    else setError("Failed to send OTP");
+  } else {
+    const res = await fetch("https://stock-g0zg.onrender.com/api/verify-otp", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, otp })
+    });
+
+    if (res.ok) onLoginSuccess(email);
+    else setError("Invalid OTP");
+  }
+};
+
 
   return (
     <div className="lp-container">
@@ -120,11 +152,22 @@ const LoginPage = ({ onLoginSuccess }) => {
                     setError('');
                   }}
                 />
+                {otpSent && (
+                  <div className="lp-input-group">
+                    <label className="lp-label">Enter OTP</label>
+                    <input
+                      className="lp-input"
+                      value={otp}
+                      onChange={(e) => setOtp(e.target.value)}
+                      placeholder="6-digit OTP"
+                    />
+                  </div>
+                )}
                 {error && <span className="lp-error-msg">{error}</span>}
               </div>
 
-              <button type="submit" className="lp-button" disabled={isLoading}>
-                {isLoading ? <span className="lp-loader"></span> : 'Access Dashboard'}
+             <button type="submit" className="lp-button" disabled={isLoading}>
+                {isLoading ? "Processing..." : otpSent ? "Verify OTP" : "Send OTP"}
               </button>
             </form>
 
