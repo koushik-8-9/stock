@@ -6,7 +6,8 @@ Users can log in using email, subscribe to stocks, and view live-updating simula
 ---
 
 ## 🚀 Features
-- Mock email-only login (no password)
+- Mock email-only login
+- OTP based login
 - Supported stocks: GOOG, TSLA, AMZN, META, NVDA
 - Subscribe / Unsubscribe to stocks
 - Real-time price updates using WebSockets
