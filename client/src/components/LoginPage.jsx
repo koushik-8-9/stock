@@ -129,7 +129,7 @@ const LoginPage = ({ onLoginSuccess }) => {
             </form>
 
             <div className="lp-footer">
-              <p>Protected by Enterprise Grade Security</p>
+              {/* <p>Protected </p> */}
             </div>
           </div>
         </div>
